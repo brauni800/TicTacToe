@@ -70,7 +70,7 @@ public class Play {
                 cont = 0;
             }
         }
-        if(this.turno == 8){
+        if(this.turno == 8 && !finish){
             this.jl2.setText("Empate");
             mostrarElementos();
             finish = true;
