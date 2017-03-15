@@ -7,6 +7,8 @@ package Ventana;
 
 import Modulo.ColocarXO;
 import Modulo.Play;
+import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.JLabel;
 
 /**
@@ -14,10 +16,11 @@ import javax.swing.JLabel;
  * @author b1796
  */
 public class Main extends javax.swing.JFrame {
-    
-    private int turno;
+    private Main[] arrayMain;
+    private int turno, a, b;
     private int[][] array;
     private boolean juegoTerminado;
+    private JLabel jl;
 
     /**
      * Creates new form Main
@@ -32,23 +35,62 @@ public class Main extends javax.swing.JFrame {
         this.jButton1.setVisible(false);
         this.jButton2.setVisible(false);
         this.juegoTerminado = false;
+        arregloMain();
     }
     
-    private void colocar(JLabel jl, int a, int b){
+    public Main(JLabel jl, int a, int b){
+        this.jl = jl;
+        this.a = a;
+        this.b = b;
+    }
+    
+    private void colocar(Main main){
         boolean z;
         if(this.juegoTerminado)
             z = false;
         else
-            z = verificarIcono(jl);
+            z = verificarIcono(main.jl);
         
         if(z){
-            ColocarXO xo = new ColocarXO(getTurno(), jl);
-            int i = xo.execute();
-            this.repaint();
-            this.array[a][b] = i;
-            this.juegoTerminado = verificarGanador();
-            cambioTurno(i);
+            execute(main.jl, main.a, main.b);
+            this.arrayMain = extraerMain(main);
+            if(!this.juegoTerminado){
+                Main m = turnoIA();
+                execute(m.jl, m.a, m.b);
+                this.arrayMain = extraerMain(m);
+            }
         }
+    }
+    
+    private Main[] extraerMain(Main main){
+        ArrayList tempList = new ArrayList();
+        Main[] temp = null;
+        for(int i = 0; i < this.arrayMain.length; i++){
+            if((this.arrayMain[i]).a == main.a && (this.arrayMain[i]).b == main.b){
+                //No hace nada
+            }else
+                tempList.add(this.arrayMain[i]);
+        }
+        temp = new Main[tempList.size()];
+        for(int j = 0; j < tempList.size(); j++)
+            temp[j] = (Main)tempList.get(j);
+        return temp;
+    }
+    
+    private Main turnoIA(){
+        Random rnd = new Random();
+        int x = rnd.nextInt(this.arrayMain.length);
+        Main m = this.arrayMain[x];
+        return m;
+    }
+    
+    private void execute(JLabel jl, int a, int b){
+        ColocarXO xo = new ColocarXO(getTurno(), jl);
+        int i = xo.execute();
+        this.repaint();
+        this.array[a][b] = i;
+        this.juegoTerminado = verificarGanador();
+        cambioTurno(i);
     }
     
     private void cambioTurno(int i){
@@ -56,7 +98,7 @@ public class Main extends javax.swing.JFrame {
         if(i == 2)
             this.jLabel3.setText("Jugador 1");
         else
-            this.jLabel3.setText("Jugador 2");;
+            this.jLabel3.setText("Jugador 2");
     }
     
     private boolean verificarIcono(JLabel jLabel){
@@ -67,8 +109,22 @@ public class Main extends javax.swing.JFrame {
     }
     
     private boolean verificarGanador(){
-        Play play = new Play(this.array, this.jPanel1, this.jLabel13, this.jLabel14, this.jLabel2, this.jLabel3, this.jButton1, this.jButton2, this.turno);
+        Play play = new Play(this.array, this.jPanel1, this.jLabel13, this.jLabel14, this.jLabel2,
+                this.jLabel3, this.jButton1, this.jButton2, this.turno);
         return play.whoWin();
+    }
+    
+    private void arregloMain(){
+        this.arrayMain = new Main[9];
+        this.arrayMain[0] = new Main(this.jLabel4, 0, 0);
+        this.arrayMain[1] = new Main(this.jLabel5, 0, 1);
+        this.arrayMain[2] = new Main(this.jLabel6, 0, 2);
+        this.arrayMain[3] = new Main(this.jLabel7, 1, 0);
+        this.arrayMain[4] = new Main(this.jLabel8, 1, 1);
+        this.arrayMain[5] = new Main(this.jLabel9, 1, 2);
+        this.arrayMain[6] = new Main(this.jLabel10, 2, 0);
+        this.arrayMain[7] = new Main(this.jLabel11, 2, 1);
+        this.arrayMain[8] = new Main(this.jLabel12, 2, 2);
     }
     
     private void resetGame(){
@@ -92,6 +148,7 @@ public class Main extends javax.swing.JFrame {
         this.juegoTerminado = false;
         this.jLabel2.setVisible(true);
         this.jLabel3.setVisible(true);
+        arregloMain();
     }
 
     /**
@@ -261,47 +318,47 @@ public class Main extends javax.swing.JFrame {
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
         // TODO add your handling code here:
-        colocar(this.jLabel4, 0, 0);
+        colocar(new Main(this.jLabel4, 0, 0));
     }//GEN-LAST:event_jLabel4MouseClicked
 
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
         // TODO add your handling code here:
-        colocar(this.jLabel5, 0, 1);
+        colocar(new Main(this.jLabel5, 0, 1));
     }//GEN-LAST:event_jLabel5MouseClicked
 
     private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
         // TODO add your handling code here:
-        colocar(this.jLabel6, 0, 2);
+        colocar(new Main(this.jLabel6, 0, 2));
     }//GEN-LAST:event_jLabel6MouseClicked
 
     private void jLabel7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseClicked
         // TODO add your handling code here:
-        colocar(this.jLabel7, 1, 0);
+        colocar(new Main(this.jLabel7, 1, 0));
     }//GEN-LAST:event_jLabel7MouseClicked
 
     private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
         // TODO add your handling code here:
-        colocar(this.jLabel8, 1, 1);
+        colocar(new Main(this.jLabel8, 1, 1));
     }//GEN-LAST:event_jLabel8MouseClicked
 
     private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
         // TODO add your handling code here:
-        colocar(this.jLabel9, 1, 2);
+        colocar(new Main(this.jLabel9, 1, 2));
     }//GEN-LAST:event_jLabel9MouseClicked
 
     private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
         // TODO add your handling code here:
-        colocar(this.jLabel10, 2, 0);
+        colocar(new Main(this.jLabel10, 2, 0));
     }//GEN-LAST:event_jLabel10MouseClicked
 
     private void jLabel11MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel11MouseClicked
         // TODO add your handling code here:
-        colocar(this.jLabel11, 2, 1);
+        colocar(new Main(this.jLabel11, 2, 1));
     }//GEN-LAST:event_jLabel11MouseClicked
 
     private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
         // TODO add your handling code here:
-        colocar(this.jLabel12, 2, 2);
+        colocar(new Main(this.jLabel12, 2, 2));
     }//GEN-LAST:event_jLabel12MouseClicked
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
