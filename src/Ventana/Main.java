@@ -3,27 +3,52 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Ventana;
+package ventana;
 
-import Modulo.ColocarXO;
-import Modulo.Play;
+import modulo.ColocarXO;
+import modulo.Play;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.JLabel;
 
 /**
- *
- * @author b1796
+ * Esta clase se encargara de generar la ventana
+ * del juego y los metodos principales
+ * que haran funcionar el juego del TicTacToe.
+ * @author Carlos Braulio Betancourt Estrada
+ * @version 1.1 15 de Marzo del 2017
  */
 public class Main extends javax.swing.JFrame {
+    /**
+     * Arreglo que contiene objetos de tipo Main.
+     */
     private Main[] arrayMain;
+    /**
+     * Variable int.
+     */
     private int turno, a, b;
+    /**
+     * Arreglo que contiene enteros.
+     * Este arreglo sirve para llevar un registro de
+     * que jugador ocupa una respectiva
+     * casilla del TicTacToe.
+     */
     private int[][] array;
+    /**
+     * Variable de tipo Boolean.
+     * Indica si el juego esta ejecutandose o ha terminado.
+     */
     private boolean juegoTerminado;
+    /**
+     * Variable de tipo JLabel.
+     * Se utilizara para almacenar el valor
+     * de un JLabel para luego poder
+     * relacionarlo con una coordenada.
+     */
     private JLabel jl;
 
     /**
-     * Creates new form Main
+     * Creates new form Main.
      */
     public Main() {
         this.array = new int[3][3];
@@ -37,84 +62,145 @@ public class Main extends javax.swing.JFrame {
         this.juegoTerminado = false;
         arregloMain();
     }
-    
+    /**
+     * Constructor que relaciona los JLabel
+     * con su respectiva posicion en el array.
+     * @param jl jLabel que se relaciona con una coordenada
+     * @param a coordenada x del array
+     * @param b coordenada y del array
+     * @see arreglo_con_coordenada( JLabel, int, int )
+     */
     public Main(JLabel jl, int a, int b){
         this.jl = jl;
         this.a = a;
         this.b = b;
     }
-    
+    /**
+     * Metodo que coloca una imagen en un jLabel.
+     * @param main Objeto el cual se extraera sus
+     * elementos para colocar una imagen en su JLabel
+     * y registrar una casilla usada en arrayMain
+     * en la coordenada que tenga guardada este objeto.
+     * @see colocar_main( main )
+     */
     private void colocar(Main main){
         boolean z;
-        if(this.juegoTerminado)
+        if (this.juegoTerminado) {
             z = false;
-        else
+        } else {
             z = verificarIcono(main.jl);
-        
-        if(z){
-            execute(main.jl, main.a, main.b);
+        }
+        if (z) {
+            execute(main);
             this.arrayMain = extraerMain(main);
-            if(!this.juegoTerminado){
+            if (!this.juegoTerminado) {
                 Main m = turnoIA();
-                execute(m.jl, m.a, m.b);
+                execute(m);
                 this.arrayMain = extraerMain(m);
             }
         }
     }
-    
+    /**
+     * Crea un nuevo arreglo de objetos de tipo Main
+     * excluyendo al Main que recibe como parametro.
+     * @param main Elemento que se excluira en el arreglo.
+     * @return Main[] - Arreglo conformado de objetos de tipo Main.
+     * @see extraer_objeto_main( main )
+     */
     private Main[] extraerMain(Main main){
         ArrayList tempList = new ArrayList();
         Main[] temp = null;
-        for(int i = 0; i < this.arrayMain.length; i++){
-            if((this.arrayMain[i]).a == main.a && (this.arrayMain[i]).b == main.b){
+        for (int i = 0; i < this.arrayMain.length; i++) {
+            if (this.arrayMain[i].a == main.a
+                    && this.arrayMain[i].b == main.b) {
                 //No hace nada
-            }else
+            } else {
                 tempList.add(this.arrayMain[i]);
+            }
         }
         temp = new Main[tempList.size()];
-        for(int j = 0; j < tempList.size(); j++)
-            temp[j] = (Main)tempList.get(j);
+        for (int j = 0; j < tempList.size(); j++) {
+            temp[j] = (Main) tempList.get(j);
+        }
         return temp;
     }
-    
-    private Main turnoIA(){
+    /**
+     * Devuelve un objeto de tipo Main aleatorio
+     * del arreglo de objetos de tipo Main arrayMain.
+     * @return Main - Objeto de tipo Main.
+     * @see devolver_Main_aleatorio()
+     */
+    private Main turnoIA() {
         Random rnd = new Random();
         int x = rnd.nextInt(this.arrayMain.length);
         Main m = this.arrayMain[x];
         return m;
     }
-    
-    private void execute(JLabel jl, int a, int b){
-        ColocarXO xo = new ColocarXO(getTurno(), jl);
-        int i = xo.execute();
-        this.repaint();
-        this.array[a][b] = i;
+    /**
+     * Metodo que se encarga de ejecutar
+     * los metodos adecuados para que
+     * funcione el algoritmo del juego.
+     * @param main Objeto de tipo Main con el que se trabajara.
+     */
+    private void execute(Main main){
+        int i = setIcon(main.jl);
+        this.array[main.a][main.b] = i;
         this.juegoTerminado = verificarGanador();
         cambioTurno(i);
     }
-    
+    /**
+     * Coloca una imagen en el JLabel correspondiente.
+     * @param jl JLabel donde se colocara la imagen.
+     * @return int - Numero del jugador que coloco su respectiva imagen.
+     */
+    private int setIcon(JLabel jl){
+        ColocarXO xo = new ColocarXO(this.turno, jl);
+        int i = xo.execute();
+        this.repaint();
+        return i;
+    }
+    /**
+     * Cambia el turno del jugador.
+     * @param i Turno actual que sera cambiado.
+     * @see cambiar_turno( int )
+     */
     private void cambioTurno(int i){
-        this.turno ++;
-        if(i == 2)
+        this.turno++;
+        if (i == 2) {
             this.jLabel3.setText("Jugador 1");
-        else
+        } else {
             this.jLabel3.setText("Jugador 2");
+        }
     }
-    
+    /**
+     * Verifica si un JLabel tiene un icono.
+     * @param jLabel JLabel a verificar.
+     * @return true si JLabel tiene un icono y false si no tiene.
+     * @see verificar_icono( JLabel )
+     */
     private boolean verificarIcono(JLabel jLabel){
-        if(jLabel.getIcon() == null)
+        if (jLabel.getIcon() == null) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
-    
-    private boolean verificarGanador(){
-        Play play = new Play(this.array, this.jPanel1, this.jLabel13, this.jLabel14, this.jLabel2,
+    /**
+     * Verifica que jugador gana el juego.
+     * @return true si un jugador gana, false si no gana.
+     * @see verificar_ganador()
+     */
+    private boolean verificarGanador() {
+        Play play = new Play(this.array, this.jPanel1,
+                this.jLabel13, this.jLabel14, this.jLabel2,
                 this.jLabel3, this.jButton1, this.jButton2, this.turno);
         return play.whoWin();
     }
-    
-    private void arregloMain(){
+    /**
+     * Arreglo de objetos de tipo Main.
+     * @see arreglo_de_main()
+     */
+    private void arregloMain() {
         this.arrayMain = new Main[9];
         this.arrayMain[0] = new Main(this.jLabel4, 0, 0);
         this.arrayMain[1] = new Main(this.jLabel5, 0, 1);
@@ -126,8 +212,13 @@ public class Main extends javax.swing.JFrame {
         this.arrayMain[7] = new Main(this.jLabel11, 2, 1);
         this.arrayMain[8] = new Main(this.jLabel12, 2, 2);
     }
-    
-    private void resetGame(){
+    /**
+     * Metodo que reinicia todas las variables del juego
+     * a sus valores originales
+     * para ser utilizadas nuevamente.
+     * @see reiniciar_juego()
+     */
+    private void resetGame() {
         this.jPanel1.setVisible(false);
         this.jLabel13.setVisible(false);
         this.jLabel14.setVisible(false);
@@ -404,7 +495,6 @@ public class Main extends javax.swing.JFrame {
                 new Main().setVisible(true);
             }
         });
-        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -427,33 +517,5 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     // End of variables declaration//GEN-END:variables
-
-    /**
-     * @return the turno
-     */
-    public int getTurno() {
-        return turno;
-    }
-
-    /**
-     * @param turno the turno to set
-     */
-    public void setTurno(int turno) {
-        this.turno = turno;
-    }
-
-    /**
-     * @return the array
-     */
-    public int[][] getArray() {
-        return array;
-    }
-
-    /**
-     * @param array the array to set
-     */
-    public void setArray(int[][] array) {
-        this.array = array;
-    }
 
 }
